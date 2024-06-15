@@ -7,6 +7,8 @@ import SignIn from "./components/auth/SignIn.jsx";
 import SignUp from "./components/auth/SignUp.jsx";
 import Dashboard from "./scenes/dashboard";
 import { Routes, Route, Navigate } from "react-router-dom";
+import Sidebar from "./scenes/global/sidebar.jsx";
+import Topbar from "./scenes/global/topbar.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -34,7 +36,7 @@ function App() {
               <div
                 style={{ display: "flex", flexDirection: "row", flexGrow: 1 }}
               >
-                <h1>Sidebar</h1>
+                <Sidebar />
                 <div
                   style={{
                     display: "flex",
@@ -42,10 +44,15 @@ function App() {
                     flexGrow: 1,
                   }}
                 >
-                  <h1>Topbar</h1>
+                  <Topbar />
                   <main className="content" style={{ flexGrow: 1 }}>
                     <Routes>
                       <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/fragen" element={<Dashboard />} />
+                      <Route
+                        path="/fragen_hinzufuegen"
+                        element={<Dashboard />}
+                      />
                       <Route
                         path="*"
                         element={<Navigate replace to="/dashboard" />}
