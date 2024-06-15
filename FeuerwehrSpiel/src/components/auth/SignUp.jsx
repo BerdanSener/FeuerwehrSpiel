@@ -7,7 +7,6 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import GoogleIcon from "@mui/icons-material/Google";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { auth, db } from "../../firebase/firebase.mjs";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -127,15 +126,6 @@ function SignUp() {
           <Button
             variant="contained"
             fullWidth
-            startIcon={<GoogleIcon />}
-            onClick={handleSignUpWithGoogle}
-            sx={{ mt: 0.5, mb: 2 }}
-          >
-            Über Google Registrieren?
-          </Button>
-          <Button
-            variant="contained"
-            fullWidth
             onClick={(e) => {
               //e.preventDefault();
               navigate("/signin");
@@ -145,7 +135,7 @@ function SignUp() {
             Zur Anmeldung
           </Button>
         </Box>
-        Copyright © FinanzHawara 2024
+        Copyright © FeuerwehrSpiel 2024
       </Container>
     </ThemeProvider>
   );

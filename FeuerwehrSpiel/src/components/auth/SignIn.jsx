@@ -1,14 +1,12 @@
-
 import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import GoogleIcon from '@mui/icons-material/Google';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { auth } from "../../firebase/firebase.mjs";
 import {
@@ -26,7 +24,7 @@ function SignIn() {
   const navigate = useNavigate();
 
   const handleSignIn = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -66,11 +64,9 @@ function SignIn() {
     }
   };
 
-
   return (
-     <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs" align="center">
-      
         <CssBaseline />
         <Box
           sx={{
@@ -86,7 +82,12 @@ function SignIn() {
           <Typography component="h1" variant="h5">
             Login
           </Typography>
-          <Box component="form" onSubmit={handleSignIn} noValidate sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleSignIn}
+            noValidate
+            sx={{ mt: 1 }}
+          >
             <TextField
               margin="normal"
               required
@@ -111,7 +112,7 @@ function SignIn() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            
+
             <Button
               type="submit"
               fullWidth
@@ -120,34 +121,23 @@ function SignIn() {
             >
               Anmelden
             </Button>
-            
-              <Button
-                variant="contained"
-                fullWidth
-                startIcon={<GoogleIcon />}
-                onClick={signInWithGoogle}
-                sx={{ mt: 0.5, mb: 2 }}
-              >
-                Stattdessen mit Google anmelden?
-              </Button>
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={(e) =>{
-                  e.preventDefault();
-                  navigate("/signup");
-                }}
-                sx={{ mt: 0.5, mb: 2 }}
-              >
-                Du hast noch kein Konto? Registriere dich!
-              </Button>
-              
+
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/signup");
+              }}
+              sx={{ mt: 0.5, mb: 2 }}
+            >
+              Du hast noch kein Konto? Registriere dich!
+            </Button>
           </Box>
         </Box>
-        
-      Copyright © FinanzHawara 2024
+        Copyright © FeuerwehrSpiel 2024
       </Container>
-     </ThemeProvider>
+    </ThemeProvider>
   );
 }
 

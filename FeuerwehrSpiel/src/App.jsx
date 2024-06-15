@@ -1,35 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import { ColorModeContext, useMode } from "./theme";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase/firebase.mjs";
+import SignIn from "./components/auth/SignIn.jsx";
+import SignUp from "./components/auth/SignUp.jsx";
+import Dashboard from "./scenes/dashboard";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [theme, colorMode] = useMode();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <div
+          className="App"
+          style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+        >
+          {user ? (
+            // Render this part when user is logged in
+            <>
+              <div
+                style={{ display: "flex", flexDirection: "row", flexGrow: 1 }}
+              >
+                <h1>Sidebar</h1>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    flexGrow: 1,
+                  }}
+                >
+                  <h1>Topbar</h1>
+                  <main className="content" style={{ flexGrow: 1 }}>
+                    <Routes>
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route
+                        path="*"
+                        element={<Navigate replace to="/dashboard" />}
+                      />
+                    </Routes>
+                  </main>
+                </div>
+              </div>
+            </>
+          ) : (
+            // Render this part when no user is logged in
+            <Routes>
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="*" element={<Navigate replace to="/signin" />} />
+            </Routes>
+          )}
+        </div>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
+  );
 }
 
-export default App
+export default App;
