@@ -3,7 +3,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import LoginIcon from "@mui/icons-material/Login";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -77,7 +77,7 @@ function SignIn() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <AccountBalanceIcon />
+            <LoginIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Login

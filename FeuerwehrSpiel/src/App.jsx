@@ -6,6 +6,7 @@ import { auth } from "./firebase/firebase.mjs";
 import SignIn from "./components/auth/SignIn.jsx";
 import SignUp from "./components/auth/SignUp.jsx";
 import Dashboard from "./scenes/dashboard";
+import AdminPage from "./scenes/admin/adminpage.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./scenes/global/sidebar.jsx";
 import Topbar from "./scenes/global/topbar.jsx";
@@ -51,7 +52,7 @@ function App() {
                       <Route path="/fragen" element={<Dashboard />} />
                       <Route
                         path="/fragen_hinzufuegen"
-                        element={<Dashboard />}
+                        element={<AdminPage />}
                       />
                       <Route
                         path="*"
