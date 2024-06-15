@@ -4,7 +4,8 @@ import { doc, getDoc, setDoc, updateDoc, Timestamp } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase.mjs";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useState } from "react";
-import { Container, Grid, Paper } from "@mui/material";
+import { Container, Grid, Paper, Typography } from "@mui/material";
+import AntwortMoeglichkeitGrid from "./AntwortMoeglichkeitGrid";
 
 const AdminPage = () => {
   const [user] = useAuthState(auth);
@@ -16,6 +17,12 @@ const AdminPage = () => {
     }
   };
 
+  // Generate dummy data for the second grid
+  const secondGridItems = Array.from({ length: 2 }, (_, index) => ({
+    id: index + 1,
+    content: `Item ${index + 1}`,
+  }));
+
   const [frage, setFrage] = useState("");
 
   return (
@@ -23,36 +30,33 @@ const AdminPage = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Frage hinzufügen" subtitle="Erstelle deine Frage" />
 
-        <Container>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Paper elevation={3} style={{ padding: 16 }}>
-                <TextField
-                  name="frage"
-                  label="Frage"
-                  variant="outlined"
-                  onChange={setFrage}
-                />
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper elevation={3} style={{ padding: 16 }}>
-                <Grid container>
-                  <Grid item xs={12}>
-                    <Paper elevation={1} style={{ padding: 16 }}>
-                      Nested Grid Item
-                    </Paper>
-                  </Grid>
+        <Grid container spacing={2}>
+          {/* First row with a single column */}
+          <Grid item xs={12}>
+            <Typography variant="h5">First Row</Typography>
+            <TextField
+              name="frage"
+              label="Frage"
+              variant="outlined"
+              onChange={setFrage}
+            />
+          </Grid>
+
+          {/* Second row with nested Grid for dynamic number of rows and 3 columns */}
+          <Grid item xs={12}>
+            <Typography variant="h5">Second Row</Typography>
+            <Grid container spacing={2}>
+              {secondGridItems.map((item) => (
+                <Grid item xs={4}>
+                  {/* Content for each item in the second grid */}
+                  <AntwortMoeglichkeitGrid />
                 </Grid>
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper elevation={3} style={{ padding: 16 }}>
-                Row 3
-              </Paper>
+              ))}
             </Grid>
           </Grid>
-        </Container>
+
+          {/* Additional rows can be added similarly */}
+        </Grid>
       </Box>
     </Box>
   );
