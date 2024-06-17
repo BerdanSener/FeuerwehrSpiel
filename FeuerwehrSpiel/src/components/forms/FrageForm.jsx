@@ -10,7 +10,6 @@ const FrageForm = () => {
 
     const [selectedCheckbox, setSelectedCheckbox] = useState(null);
     const [feedback, setFeedback] = useState('');
-    var correctCheckbox = 0
 
     const FetchQuestions = async () => {
         try {
@@ -37,7 +36,15 @@ const FrageForm = () => {
         }
     };
     //var correctCheckbox1 = questions[1].Antwort
-    correctCheckbox = 3// correctCheckbox1
+    var correctCheckbox =  questions[1].Antwort // correctCheckbox1
+    var correctCheckbox1 = 4
+
+    if(correctCheckbox1 === correctCheckbox){
+        console.log("if:", true);
+    } else {
+        console.log("false")
+    }
+
     console.log("Ausgabe: Correctcheckbox1: ", correctCheckbox);
       //  console.log("Ausgabe: ", questions[0].Antwort);
 
@@ -72,13 +79,14 @@ const FrageForm = () => {
                         <strong>Antwort:</strong> {question.Antwort}<br/>
                     </li>
                 ))}
-            </ul> */
+            </ul>
+                         //
+              */
 
     return (
         <div>
-            <p>Wo befindet sich {questions[1].id}?</p>
-            <div className="App">
-                <h1>Wählen Sie die richtige Checkbox</h1>
+            <h1>Wo befindet sich {questions[1].id}?</h1>
+                <h3>Wählen Sie die richtige Checkbox</h3>
                 <div className="checkbox-group">
                     {[1, 2, 3, 4, 5, 6].map((number) => (
                         <label key={number}
@@ -89,12 +97,12 @@ const FrageForm = () => {
                                 checked={selectedCheckbox === number}
                                 onChange={handleCheckboxChange}
                             />
-                            Checkbox {number}
+                            Laderaum {number}
                         </label>
                     ))}
                 </div>
                 {feedback && <p>{feedback}</p>}
-            </div>
+
         </div>
     );
     };
