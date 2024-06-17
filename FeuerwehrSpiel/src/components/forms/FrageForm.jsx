@@ -1,61 +1,62 @@
-// src/FormSheet.js
-import React, { useState } from 'react';
-import './FormSheet.css';
+// QuestionsComponent.js
+import React, { useEffect, useState } from 'react';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { auth, db, signInWithEmailAndPassword } from '../../firebase/firebase.mjs';
 
-const FormSheet = () => {
-    const [selectedOptions, setSelectedOptions] = useState([]);
+const FrageForm = () => {
+    const [questions, setQuestions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+    const FetchQuestions = async () => {
+        try {
+            // Anmeldung mit E-Mail und Passwort
+            await signInWithEmailAndPassword(auth, "roman.schuller@gmail.com", "Roman12345");
 
-    const options = [
-        { id: 'option1', label: '1' },
-        { id: 'option2', label: '2' },
-        { id: 'option3', label: '3' },
-        { id: 'option1', label: '4' },
-        { id: 'option2', label: '5' },
-        { id: 'option3', label: '6' },
-        { id: 'option1', label: '7' },
-        { id: 'option2', label: '8' },
-    ];
+            // Zugriff auf die Sammlung 'Fragenkatalog'
+            const querySnapshot = await getDocs(collection(db, "RLFTest"));
 
-    const handleCheckboxChange = (event) => {
-        const { id, checked } = event.target;
-        setSelectedOptions((prevSelectedOptions) =>
-            checked
-                ? [...prevSelectedOptions, id]
-                : prevSelectedOptions.filter((option) => option !== id)
-        );
+            // Extrahieren der Daten aus den Dokumenten
+            const questionsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setQuestions(questionsList);
+            var first= questions[1]
+           // console.log(first, first.Antwort[0])
+            //console.log("Länge: ", first.Antwort.length)
+        } catch (error) {
+            console.error("Fehler beim Abrufen der Fragen: ", error);
+            setError("Fehler beim Abrufen der Fragen");
+        } finally {
+            setLoading(false);
+        }
     };
 
+    useEffect(() => {
+        FetchQuestions();
+    }, []);
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log('Selected Multiple Options:', selectedOptions);
-        console.log('Selected Single Option:', singleOption);
-    };
+    if (loading) {
+        return <div>Laden...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+    /*
+            <h2>Fragenkatalog</h2>
+            <ul>
+                {questions.map((question) => (
+                    <li key={question.id}>
+                        <strong>Frage:</strong> {question.Antwort} <br />
+                        <strong>Antwort:</strong> {question.Antwort}<br/>
+                    </li>
+                ))}
+            </ul> */
 
     return (
-        <div className="form-container">
-            <h1>Formblatt</h1>
-            <p>Bitte wählen Sie die Optionen aus:</p>
-            <form onSubmit={handleSubmit}>
-                <div className="form-section">
-                    <h2>Multiple Choice</h2>
-                    {options.map((option) => (
-                        <div key={option.id}>
-                            <input
-                                type="checkbox"
-                                id={option.id}
-                                onChange={handleCheckboxChange}
-                            />
-                            <label htmlFor={option.id}>{option.label}</label>
-                        </div>
-                    ))}
-                </div>
-
-                <button type="submit" className="submit-button">Absenden</button>
-            </form>
+        <div>
+            <p>Wo befindet sich {questions[1].id}?</p>
         </div>
     );
 };
 
-export default FormSheet;
+export default FrageForm;
