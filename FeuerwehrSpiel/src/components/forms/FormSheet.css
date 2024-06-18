@@ -1,54 +1,23 @@
-/* src/FormSheet.css */
-.form-container {
-    max-width: 600px;
-    margin: 0 auto;
+.App {
+    font-family: Arial, sans-serif;
     padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
-    color: #242424;
 }
 
-.form-container h1,
-.form-container h2 {
-    text-align: center;
-}
-
-.form-container p {
-    text-align: center;
-    font-size: 1.2em;
-    margin-bottom: 20px;
-}
-
-.form-section {
-    margin-bottom: 20px;
-}
-
-.form-section div {
+.checkbox-group {
     display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+    flex-direction: column;
 }
 
-.form-section input[type="checkbox"],
-.form-section input[type="radio"] {
-    margin-right: 10px;
+.checkbox-label {
+    margin: 5px 0;
 }
 
-.submit-button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    font-size: 1em;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
+.correct {
+    background-color: green;
+    color: white;
 }
 
-.submit-button:hover {
-    background-color: #0056b3;
+.incorrect {
+    background-color: red;
+    color: white;
 }

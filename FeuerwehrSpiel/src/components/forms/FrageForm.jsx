@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, db, signInWithEmailAndPassword } from '../../firebase/firebase.mjs';
+import './FormSheet.css'
 
 const FrageForm = () => {
     const [questions, setQuestions] = useState([]);
