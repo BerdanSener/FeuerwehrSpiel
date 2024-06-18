@@ -1,6 +1,6 @@
 // QuestionsComponent.js
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { auth, db, signInWithEmailAndPassword } from '../../firebase/firebase.mjs';
 import './FormSheet.css'
 
@@ -8,13 +8,13 @@ const FrageForm = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [correctCheckbox, setCorrectCheckbox] = useState(0);
-    const [selectedCheckbox, setSelectedCheckbox] = useState(null);
+    const [correctCheckboxes, setCorrectCheckboxes] = useState([]);
+    const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
     const [feedback, setFeedback] = useState('');
     const [shuffledNumbers, setShuffledNumbers] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [num, setNum] = useState(0);
-    const vehicles = ["RLFTest"] //["KLF", "RLF", "MTF", "VF"]
+    const vehicles = ["KLF"] //["KLF", "RLF", "MTF", "VF"]
 
     const randomNumberInRange = (min, max) => {
         return Math.floor(Math.random()
@@ -38,10 +38,10 @@ const FrageForm = () => {
 
 
             if (questionsList.length > 1) {
-                setCorrectCheckbox(parseInt(questionsList[1].Antwort, 10));
+                setCorrectCheckboxes(parseInt(questionsList[1].Antwort, 10));
             }
             //   correctCheckbox = questions[1].Antwort
-            console.log("Ausgabe: Correctcheckbox: ", correctCheckbox);
+            console.log("Ausgabe: Correctcheckbox: ", correctCheckboxes);
          //   var first = questions[1].Antwort
            //  console.log(first)
             //console.log("Länge: ", first.Antwort.length)
@@ -55,8 +55,8 @@ const FrageForm = () => {
 
 
     const setupQuestion = (question) => {
-        const correctAnswer = parseInt(question.Antwort, 10);
-        setCorrectCheckbox(correctAnswer);
+        const correctAnswers = question.Antwort.map(answer => parseInt(answer, 10));
+        setCorrectCheckboxes(correctAnswers);
 
         const numbers = [1, 2, 3, 4, 5, 6];
         for (let i = numbers.length - 1; i > 0; i--) {
@@ -64,15 +64,24 @@ const FrageForm = () => {
             [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
         }
         setShuffledNumbers(numbers);
-        setSelectedCheckbox(null);
+        setSelectedCheckboxes([]);
         setFeedback('');
     };
 
     const handleCheckboxChange = (event) => {
         const selectedValue = parseInt(event.target.value, 10);
-        setSelectedCheckbox(selectedValue);
+        let updatedSelectedCheckboxes = [...selectedCheckboxes];
 
-        if (selectedValue === correctCheckbox) {
+        if (updatedSelectedCheckboxes.includes(selectedValue)) {
+            updatedSelectedCheckboxes = updatedSelectedCheckboxes.filter(value => value !== selectedValue);
+        } else {
+            updatedSelectedCheckboxes.push(selectedValue);
+        }
+
+        setSelectedCheckboxes(updatedSelectedCheckboxes);
+
+        if (updatedSelectedCheckboxes.length === correctCheckboxes.length &&
+            updatedSelectedCheckboxes.every(value => correctCheckboxes.includes(value))) {
             setFeedback('Richtig');
         } else {
             setFeedback('Falsch');
@@ -80,7 +89,7 @@ const FrageForm = () => {
     };
 
     const handleNextQuestion = () => {
-        if (currentQuestionIndex < 9) {
+        if (currentQuestionIndex < questions.length-1) {
             const nextIndex = currentQuestionIndex + 1;
             setCurrentQuestionIndex(nextIndex);
             setupQuestion(questions[nextIndex]);
@@ -119,7 +128,7 @@ const FrageForm = () => {
         return <div>Sie haben alle 10 Fragen beantwortet!</div>;
     }
 
-    console.log("Ausgabe: Correctcheckbox: ", correctCheckbox);
+    console.log("Ausgabe: Correctcheckbox: ", correctCheckboxes);
     console.log("Frage: ", currentQuestionIndex)
     return (
         <div>
@@ -129,11 +138,11 @@ const FrageForm = () => {
             <div className="checkbox-group">
                 {shuffledNumbers.map((number) => (
                     <label key={number}
-                           className={`checkbox-label ${selectedCheckbox === number ? (number === correctCheckbox ? 'correct' : 'incorrect') : ''}`}>
+                           className={`checkbox-label ${selectedCheckboxes.includes(number) ? (correctCheckboxes.includes(number) ? 'correct' : 'incorrect') : ''}`}>
                         <input
                             type="checkbox"
                             value={number}
-                            checked={selectedCheckbox === number}
+                            checked={selectedCheckboxes.includes(number)}
                             onChange={handleCheckboxChange}
                         />
                         Laderaum {number}
@@ -141,7 +150,7 @@ const FrageForm = () => {
                 ))}
             </div>
             {feedback && <p>{feedback}</p>}
-            <button onClick={handleNextQuestion}>Weiter</button>
+            <button onClick={handleNextQuestion}>Nächste Frage</button>
 
         </div>
     );
