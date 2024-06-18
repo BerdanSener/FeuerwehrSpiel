@@ -7,7 +7,7 @@ const FrageForm = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const [correctCheckbox, setCorrectCheckbox] = useState(0);
     const [selectedCheckbox, setSelectedCheckbox] = useState(null);
     const [feedback, setFeedback] = useState('');
     const [shuffledNumbers, setShuffledNumbers] = useState([]);
@@ -24,6 +24,10 @@ const FrageForm = () => {
             const questionsList = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
             setQuestions(questionsList);
 
+
+            if (questionsList.length > 1) {
+                setCorrectCheckbox(parseInt(questionsList[1].Antwort, 10));
+            }
             //   correctCheckbox = questions[1].Antwort
             console.log("Ausgabe: Correctcheckbox: ", correctCheckbox);
          //   var first = questions[1].Antwort
@@ -38,7 +42,7 @@ const FrageForm = () => {
     };
     //var correctCheckbox1 = questions[1].Antwort
  //  var correctCheckbox1 =  questions[0].Antwort[1] // correctCheckbox1
-    var correctCheckbox = 4
+  //  var correctCheckbox = 4
 
    /* if(correctCheckbox1 === correctCheckbox){
         console.log("if:", true);
@@ -46,7 +50,7 @@ const FrageForm = () => {
         console.log("false")
     }*/
 
-    console.log("Ausgabe: Correctcheckbox1: ", correctCheckbox);
+
       //  console.log("Ausgabe: ", questions[0].Antwort);
 
     const handleCheckboxChange = (event) => {
@@ -59,6 +63,7 @@ const FrageForm = () => {
             setFeedback('Falsch');
         }
     };
+
 
     useEffect(() => {
         FetchQuestions();
@@ -80,19 +85,7 @@ const FrageForm = () => {
     if (error) {
         return <div>{error}</div>;
     }
-    /*
-            <h2>Fragenkatalog</h2>
-            <ul>
-                {questions.map((question) => (
-                    <li key={question.id}>
-                        <strong>Frage:</strong> {question.Antwort} <br />
-                        <strong>Antwort:</strong> {question.Antwort}<br/>
-                    </li>
-                ))}
-            </ul>
-                         //
-              */
-
+    console.log("Ausgabe: Correctcheckbox: ", correctCheckbox);
     return (
         <div>
             <h1>Wo befindet sich {questions[1].id}?</h1>
