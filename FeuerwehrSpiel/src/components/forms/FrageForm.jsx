@@ -15,7 +15,7 @@ const FrageForm = () => {
     const [num, setNum] = useState(0);
     const [questionNum, setQuestionNum] = useState(0);
     const [isSingleChoice, setIsSingleChoice] = useState(true);
-    const vehicles = ["KLF"]; // ["KLF", "RLF", "MTF", "VF"]
+    const vehicles = ["KLF", "RLF", "VF"]
 
     const randomNumberInRange = (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -117,6 +117,7 @@ const FrageForm = () => {
     console.log("Frage: ", currentQuestionIndex);
     console.log("Questions: ", questions.length);
     console.log("Ausgabe QuestNum: ", questionNum);
+    console.log("Ausgbe Fahrzeug: ", questions)
 
     return (
         <div>
