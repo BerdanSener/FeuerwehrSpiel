@@ -1,20 +1,19 @@
 // QuestionsComponent.js
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { auth, db, signInWithEmailAndPassword } from '../../firebase/firebase.mjs';
 import './FormSheet.css'
 
-const FrageForm = () => {
+const FrageFormKaputt = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [correctCheckbox, setCorrectCheckbox] = useState(0);
-    const [selectedCheckbox, setSelectedCheckbox] = useState(null);
+    const [correctCheckboxes, setCorrectCheckboxes] = useState([]);
+    const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
     const [feedback, setFeedback] = useState('');
     const [shuffledNumbers, setShuffledNumbers] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [num, setNum] = useState(0);
-    const [questionNum, setQuestionNum] = useState(0);
     const vehicles = ["KLF"] //["KLF", "RLF", "MTF", "VF"]
 
     const randomNumberInRange = (min, max) => {
@@ -39,13 +38,12 @@ const FrageForm = () => {
 
 
             if (questionsList.length > 1) {
-                // Da werden die Antworten geparsed
-                setCorrectCheckbox(parseInt(questionsList[0].Antwort[0], 10));
+                setCorrectCheckboxes(parseInt(questionsList[1].Antwort[0], 10)); //da ein Random einsetzen!
             }
             //   correctCheckbox = questions[1].Antwort
-            console.log("Ausgabe: Correctcheckbox: ", correctCheckbox);
-            //   var first = questions[1].Antwort
-            //  console.log(first)
+            console.log("Ausgabe: Correctcheckbox: ", correctCheckboxes);
+         //   var first = questions[1].Antwort
+           //  console.log(first)
             //console.log("Länge: ", first.Antwort.length)
         } catch (error) {
             console.error("Fehler beim Abrufen der Fragen: ", error);
@@ -56,9 +54,12 @@ const FrageForm = () => {
     };
 
 
+
     const setupQuestion = (question) => {
-        const correctAnswer = parseInt(question.Antwort, 10);
-        setCorrectCheckbox(correctAnswer);
+        //ANSCHAUEN!
+        //const correctAnswers = Array.isArray(question.Antwort[1]) ? question.Antwort[1].map(answer => parseInt(answer, 10)) : [];
+        const correctAnswers = question.Antwort.map(answer => parseInt(answer, 10));
+        setCorrectCheckboxes(correctAnswers);
 
         const numbers = [1, 2, 3, 4, 5, 6];
         for (let i = numbers.length - 1; i > 0; i--) {
@@ -66,15 +67,24 @@ const FrageForm = () => {
             [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
         }
         setShuffledNumbers(numbers);
-        setSelectedCheckbox(null);
+        setSelectedCheckboxes([]);
         setFeedback('');
     };
 
     const handleCheckboxChange = (event) => {
         const selectedValue = parseInt(event.target.value, 10);
-        setSelectedCheckbox(selectedValue);
+        let updatedSelectedCheckboxes = [...selectedCheckboxes];
 
-        if (selectedValue === correctCheckbox) {
+        if (updatedSelectedCheckboxes.includes(selectedValue)) {
+            updatedSelectedCheckboxes = updatedSelectedCheckboxes.filter(value => value !== selectedValue);
+        } else {
+            updatedSelectedCheckboxes.push(selectedValue);
+        }
+
+        setSelectedCheckboxes(updatedSelectedCheckboxes);
+
+        if (updatedSelectedCheckboxes.length === correctCheckboxes.length &&
+            updatedSelectedCheckboxes.every(value => correctCheckboxes.includes(value))) {
             setFeedback('Richtig');
         } else {
             setFeedback('Falsch');
@@ -82,12 +92,11 @@ const FrageForm = () => {
     };
 
     const handleNextQuestion = () => {
-        if (currentQuestionIndex < 9) {
+        if (currentQuestionIndex < questions.length-1) {
             const nextIndex = currentQuestionIndex + 1;
             setCurrentQuestionIndex(nextIndex);
             setupQuestion(questions[nextIndex]);
             setNum(randomNumberInRange(0, vehicles.length-1))
-            setQuestionNum(randomNumberInRange(0, questions.length-1))
         } else {
             alert('Sie haben alle Fragen beantwortet!');
         }
@@ -121,35 +130,38 @@ const FrageForm = () => {
     if (currentQuestionIndex >= 10) {
         return <div>Sie haben alle 10 Fragen beantwortet!</div>;
     }
-
-    console.log("Ausgabe: Correctcheckbox: ", correctCheckbox);
-    console.log("Frage: ", currentQuestionIndex)
-    console.log("Questions: ", questions.length)
-    console.log("Ausgabe QuestNum: ", questionNum)
+    console.log("Correctanswers: ", correctCheckboxes)
+    console.log("Ausgabe: Correctcheckbox: ", correctCheckboxes);
+    console.log("Frage CurrentquestionIndex: ", currentQuestionIndex)
+    console.log("Selectedboxes", selectedCheckboxes)
+    console.log("ist array? ", Array.isArray.questions)
+    console.log("Was ist im Array: ", questions[0])
+   // console.log("Länge vom array? ", questions.Antwort.size)
     return (
         <div>
             <h3>Fahrzeug: {vehicles[num]}</h3>
-            <h1>Wo befindet sich {questions[questionNum].id}?</h1>
+            <h1>Wo befindet sich {questions[currentQuestionIndex]?.id}?</h1>
             <h3>Wählen Sie die richtige Checkbox</h3>
             <div className="checkbox-group">
                 {shuffledNumbers.map((number) => (
                     <label key={number}
-                           className={`checkbox-label ${selectedCheckbox === number ? (number === correctCheckbox ? 'correct' : 'incorrect') : ''}`}>
+                           className={`checkbox-label ${selectedCheckboxes.includes(number) ? (correctCheckboxes.includes(number) ? 'correct' : 'incorrect') : ''}`}>
                         <input
                             type="checkbox"
                             value={number}
-                            checked={selectedCheckbox === number}
+                            checked={selectedCheckboxes.includes(number)}
                             onChange={handleCheckboxChange}
-                        />
+
+                        />  {console.log("Nummer: ", number)}
                         Laderaum {number}
                     </label>
                 ))}
             </div>
             {feedback && <p>{feedback}</p>}
-            <button onClick={handleNextQuestion}>Weiter</button>
+            <button onClick={handleNextQuestion}>Nächste Frage</button>
 
         </div>
     );
 };
 
-export default FrageForm;
+export default FrageFormKaputt;
