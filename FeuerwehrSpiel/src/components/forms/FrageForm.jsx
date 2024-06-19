@@ -92,7 +92,8 @@ const FrageForm = () => {
             setQuestionNum(randomNumberInRange(0, questions.length - 1));
 
         } else {
-            alert(`Sie haben alle Fragen beantwortet! Sie haben ${correctAnswersCount} von ${questions.length+1} Fragen richtig beantwortet.`);
+            alert(`Sie haben alle Fragen beantwortet! Sie haben ${correctAnswersCount} von ${questions.length + 1} Fragen richtig beantwortet.`);
+            setCorrectAnswersCount(0)
             handleBackToVehicleSelection()
         }
     };
