@@ -16,10 +16,18 @@ const FrageForm = () => {
     const [questionNum, setQuestionNum] = useState(0);
     const [isSingleChoice, setIsSingleChoice] = useState(true);
     const [vehicleIndex, setVehicleIndex] = useState(null);
+    const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
     const vehicles = ["KLF", "RLF", "VF"]
 
     const randomNumberInRange = (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+
+    const shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     };
 
     console.log("Vehicles", vehicles[num]);
@@ -30,9 +38,12 @@ const FrageForm = () => {
             await signInWithEmailAndPassword(auth, "roman.schuller@gmail.com", "Roman12345");
             const querySnapshot = await getDocs(collection(db, vehicles[vehicleIndex]));
             const questionsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            shuffleArray(questionsList);
             setQuestions(questionsList);
 
+
             if (questionsList.length > 0) {
+
                 const firstQuestion = questionsList[questionNum];
                 setIsSingleChoice(firstQuestion.Antwort.length === 1);
                 setCorrectCheckboxes(firstQuestion.Antwort.map(ans => parseInt(ans, 10)));
@@ -79,8 +90,10 @@ const FrageForm = () => {
             setIsSingleChoice(questions[nextIndex].Antwort.length === 1);
             setNum(randomNumberInRange(0, vehicles.length - 1));
             setQuestionNum(randomNumberInRange(0, questions.length - 1));
+
         } else {
-            alert('Sie haben alle Fragen beantwortet!');
+            alert(`Sie haben alle Fragen beantwortet! Sie haben ${correctAnswersCount} von ${questions.length+1} Fragen richtig beantwortet.`);
+            handleBackToVehicleSelection()
         }
     };
 
@@ -112,6 +125,9 @@ const FrageForm = () => {
     useEffect(() => {
         if (selectedCheckboxes.length > 0) {
             const isCorrect = selectedCheckboxes.every(val => correctCheckboxes.includes(val)) && correctCheckboxes.every(val => selectedCheckboxes.includes(val));
+            if(isCorrect){
+                setCorrectAnswersCount(prevCount => prevCount + 1)
+            }
             setFeedback(isCorrect ? 'Richtig' : 'Falsch');
         } else {
             setFeedback('');
@@ -154,7 +170,7 @@ const FrageForm = () => {
     return (
         <div>
             <h3>Fahrzeug: {vehicles[vehicleIndex]}</h3>
-            <h1>Wo befindet sich {questions[currentQuestionIndex].id}?</h1>
+            <h1>{!questions[currentQuestionIndex] ? "Fragen beendet!" : `Wo befindet sich ${questions[currentQuestionIndex].id}?`}</h1>
             <h3>{isSingleChoice ? "Wählen Sie die richtige Antwort" : "Wählen Sie die richtigen Antworten"}</h3>
             <div className="checkbox-group">
                 {shuffledNumbers.map((number) => (
