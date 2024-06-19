@@ -1,52 +1,40 @@
-// QuestionsComponent.js
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { auth, db, signInWithEmailAndPassword } from '../../firebase/firebase.mjs';
-import './FormSheet.css'
+import './FormSheet.css';
 
 const FrageForm = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [correctCheckbox, setCorrectCheckbox] = useState(0);
+    const [correctCheckbox, setCorrectCheckbox] = useState([]);
     const [selectedCheckbox, setSelectedCheckbox] = useState(null);
     const [feedback, setFeedback] = useState('');
     const [shuffledNumbers, setShuffledNumbers] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [num, setNum] = useState(0);
     const [questionNum, setQuestionNum] = useState(0);
-    const vehicles = ["KLF"] //["KLF", "RLF", "MTF", "VF"]
+    const [isSingleChoice, setIsSingleChoice] = useState(true);
+    const vehicles = ["KLF"]; // ["KLF", "RLF", "MTF", "VF"]
 
     const randomNumberInRange = (min, max) => {
-        return Math.floor(Math.random()
-            * (max - min + 1)) + min;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
-
-    console.log("Vehicles", vehicles[num])
+    console.log("Vehicles", vehicles[num]);
 
     const FetchQuestions = async () => {
         try {
-            // Anmeldung mit E-Mail und Passwort
             await signInWithEmailAndPassword(auth, "roman.schuller@gmail.com", "Roman12345");
-
-            // Zugriff auf die Sammlung 'Fragenkatalog'
             const querySnapshot = await getDocs(collection(db, vehicles[num]));
-
-            // Extrahieren der Daten aus den Dokumenten
-            const questionsList = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+            const questionsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setQuestions(questionsList);
 
-
-            if (questionsList.length > 1) {
-                // Da werden die Antworten geparsed
-                setCorrectCheckbox(parseInt(questionsList[0].Antwort[0], 10));
+            if (questionsList.length > 0) {
+                const firstQuestion = questionsList[0];
+                setIsSingleChoice(firstQuestion.Antwort.length === 1);
+                setCorrectCheckbox(parseInt(firstQuestion.Antwort, 10));
             }
-            //   correctCheckbox = questions[1].Antwort
-            console.log("Ausgabe: Correctcheckbox: ", correctCheckbox);
-            //   var first = questions[1].Antwort
-            //  console.log(first)
-            //console.log("Länge: ", first.Antwort.length)
         } catch (error) {
             console.error("Fehler beim Abrufen der Fragen: ", error);
             setError("Fehler beim Abrufen der Fragen");
@@ -54,7 +42,6 @@ const FrageForm = () => {
             setLoading(false);
         }
     };
-
 
     const setupQuestion = (question) => {
         const correctAnswer = parseInt(question.Antwort, 10);
@@ -86,28 +73,22 @@ const FrageForm = () => {
             const nextIndex = currentQuestionIndex + 1;
             setCurrentQuestionIndex(nextIndex);
             setupQuestion(questions[nextIndex]);
-            setNum(randomNumberInRange(0, vehicles.length-1))
-            setQuestionNum(randomNumberInRange(0, questions.length-1))
+            setIsSingleChoice(questions[nextIndex].Antwort.length === 1);
+            setNum(randomNumberInRange(0, vehicles.length - 1));
+            setQuestionNum(randomNumberInRange(0, questions.length - 1));
         } else {
             alert('Sie haben alle Fragen beantwortet!');
         }
     };
 
-
     useEffect(() => {
         FetchQuestions();
-        // Random den Index anlegen:
-
-
-
-        // Zahlen mischen
         const numbers = [1, 2, 3, 4, 5, 6];
         for (let i = numbers.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
         }
-
-        setShuffledNumbers(numbers)
+        setShuffledNumbers(numbers);
     }, []);
 
     if (loading) {
@@ -123,20 +104,22 @@ const FrageForm = () => {
     }
 
     console.log("Ausgabe: Correctcheckbox: ", correctCheckbox);
-    console.log("Frage: ", currentQuestionIndex)
-    console.log("Questions: ", questions.length)
-    console.log("Ausgabe QuestNum: ", questionNum)
+    console.log("Frage: ", currentQuestionIndex);
+    console.log("Questions: ", questions.length);
+    console.log("Ausgabe QuestNum: ", questionNum);
+    console.log("Ausgabe Länge von Array: ", questions[0].Antwort.length)
+
     return (
         <div>
             <h3>Fahrzeug: {vehicles[num]}</h3>
             <h1>Wo befindet sich {questions[questionNum].id}?</h1>
-            <h3>Wählen Sie die richtige Checkbox</h3>
+            <h3>{isSingleChoice ? "Wählen Sie die richtige Antwort" : "Wählen Sie die richtigen Antworten"}</h3>
             <div className="checkbox-group">
                 {shuffledNumbers.map((number) => (
                     <label key={number}
                            className={`checkbox-label ${selectedCheckbox === number ? (number === correctCheckbox ? 'correct' : 'incorrect') : ''}`}>
                         <input
-                            type="checkbox"
+                            type={isSingleChoice ? "radio" : "checkbox"}
                             value={number}
                             checked={selectedCheckbox === number}
                             onChange={handleCheckboxChange}
@@ -147,7 +130,6 @@ const FrageForm = () => {
             </div>
             {feedback && <p>{feedback}</p>}
             <button onClick={handleNextQuestion}>Weiter</button>
-
         </div>
     );
 };
