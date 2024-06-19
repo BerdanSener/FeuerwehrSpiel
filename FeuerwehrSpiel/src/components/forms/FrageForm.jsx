@@ -33,7 +33,7 @@ const FrageForm = () => {
             setQuestions(questionsList);
 
             if (questionsList.length > 0) {
-                const firstQuestion = questionsList[0];
+                const firstQuestion = questionsList[questionNum];
                 setIsSingleChoice(firstQuestion.Antwort.length === 1);
                 setCorrectCheckboxes(firstQuestion.Antwort.map(ans => parseInt(ans, 10)));
             }
@@ -139,12 +139,15 @@ const FrageForm = () => {
     if (vehicleIndex === null) {
         return (
             <div>
-                <h3>Wählen Sie ein Fahrzeug:</h3>
-                {vehicles.map((vehicle, index) => (
-                    <button key={index} value={index} onClick={handleVehicleSelection}>
-                        {vehicle}
-                    </button>
-                ))}
+                <h3>Um mit dem Fragebogen zu beginnen, wählen Sie bitte ein Fahrzeug:</h3>
+                <select onChange={handleVehicleSelection} defaultValue="">
+                    <option value="" disabled>Fahrzeug auswählen</option>
+                    {vehicles.map((vehicle, index) => (
+                        <option key={index} value={index}>
+                            {vehicle}
+                        </option>
+                    ))}
+                </select>
             </div>
         );
     }
@@ -168,8 +171,10 @@ const FrageForm = () => {
                 ))}
             </div>
             {feedback && <p>{feedback}</p>}
+            <div className="button-group">
             <button onClick={handleNextQuestion}>Weiter</button>
-            <button onClick={handleBackToVehicleSelection}> Zurück zur Fahrzeugauswahl </button>
+                <button onClick={handleBackToVehicleSelection}> Zurück zur Fahrzeugauswahl </button>
+            </div>
         </div>
     );
 };
