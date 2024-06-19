@@ -7,8 +7,8 @@ const FrageForm = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [correctCheckbox, setCorrectCheckbox] = useState([]);
-    const [selectedCheckbox, setSelectedCheckbox] = useState(null);
+    const [correctCheckboxes, setCorrectCheckboxes] = useState([]);
+    const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
     const [feedback, setFeedback] = useState('');
     const [shuffledNumbers, setShuffledNumbers] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -33,7 +33,7 @@ const FrageForm = () => {
             if (questionsList.length > 0) {
                 const firstQuestion = questionsList[0];
                 setIsSingleChoice(firstQuestion.Antwort.length === 1);
-                setCorrectCheckbox(parseInt(firstQuestion.Antwort, 10));
+                setCorrectCheckboxes(firstQuestion.Antwort.map(ans => parseInt(ans, 10)));
             }
         } catch (error) {
             console.error("Fehler beim Abrufen der Fragen: ", error);
@@ -44,8 +44,7 @@ const FrageForm = () => {
     };
 
     const setupQuestion = (question) => {
-        const correctAnswer = parseInt(question.Antwort, 10);
-        setCorrectCheckbox(correctAnswer);
+        setCorrectCheckboxes(question.Antwort.map(ans => parseInt(ans, 10)));
 
         const numbers = [1, 2, 3, 4, 5, 6];
         for (let i = numbers.length - 1; i > 0; i--) {
@@ -53,18 +52,20 @@ const FrageForm = () => {
             [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
         }
         setShuffledNumbers(numbers);
-        setSelectedCheckbox(null);
+        setSelectedCheckboxes([]);
         setFeedback('');
     };
 
     const handleCheckboxChange = (event) => {
         const selectedValue = parseInt(event.target.value, 10);
-        setSelectedCheckbox(selectedValue);
-
-        if (selectedValue === correctCheckbox) {
-            setFeedback('Richtig');
+        if (isSingleChoice) {
+            setSelectedCheckboxes([selectedValue]);
         } else {
-            setFeedback('Falsch');
+            setSelectedCheckboxes(prevState =>
+                prevState.includes(selectedValue)
+                    ? prevState.filter(val => val !== selectedValue)
+                    : [...prevState, selectedValue]
+            );
         }
     };
 
@@ -91,6 +92,15 @@ const FrageForm = () => {
         setShuffledNumbers(numbers);
     }, []);
 
+    useEffect(() => {
+        if (selectedCheckboxes.length > 0) {
+            const isCorrect = selectedCheckboxes.every(val => correctCheckboxes.includes(val)) && correctCheckboxes.every(val => selectedCheckboxes.includes(val));
+            setFeedback(isCorrect ? 'Richtig' : 'Falsch');
+        } else {
+            setFeedback('');
+        }
+    }, [selectedCheckboxes, correctCheckboxes]);
+
     if (loading) {
         return <div>Laden...</div>;
     }
@@ -103,11 +113,10 @@ const FrageForm = () => {
         return <div>Sie haben alle 10 Fragen beantwortet!</div>;
     }
 
-    console.log("Ausgabe: Correctcheckbox: ", correctCheckbox);
+    console.log("Ausgabe: Correctcheckboxes: ", correctCheckboxes);
     console.log("Frage: ", currentQuestionIndex);
     console.log("Questions: ", questions.length);
     console.log("Ausgabe QuestNum: ", questionNum);
-    console.log("Ausgabe Länge von Array: ", questions[0].Antwort.length)
 
     return (
         <div>
@@ -117,11 +126,11 @@ const FrageForm = () => {
             <div className="checkbox-group">
                 {shuffledNumbers.map((number) => (
                     <label key={number}
-                           className={`checkbox-label ${selectedCheckbox === number ? (number === correctCheckbox ? 'correct' : 'incorrect') : ''}`}>
+                           className={`checkbox-label ${selectedCheckboxes.includes(number) ? (correctCheckboxes.includes(number) ? 'correct' : 'incorrect') : ''}`}>
                         <input
                             type={isSingleChoice ? "radio" : "checkbox"}
                             value={number}
-                            checked={selectedCheckbox === number}
+                            checked={selectedCheckboxes.includes(number)}
                             onChange={handleCheckboxChange}
                         />
                         Laderaum {number}
