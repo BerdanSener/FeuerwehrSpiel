@@ -5,7 +5,7 @@ import './FormSheet.css';
 
 const FrageForm = () => {
     const [questions, setQuestions] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [correctCheckboxes, setCorrectCheckboxes] = useState([]);
     const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
@@ -15,6 +15,7 @@ const FrageForm = () => {
     const [num, setNum] = useState(0);
     const [questionNum, setQuestionNum] = useState(0);
     const [isSingleChoice, setIsSingleChoice] = useState(true);
+    const [vehicleIndex, setVehicleIndex] = useState(null);
     const vehicles = ["KLF", "RLF", "VF"]
 
     const randomNumberInRange = (min, max) => {
@@ -23,10 +24,11 @@ const FrageForm = () => {
 
     console.log("Vehicles", vehicles[num]);
 
-    const FetchQuestions = async () => {
+    const FetchQuestions = async (vehicleIndex) => {
+        setLoading(true)
         try {
             await signInWithEmailAndPassword(auth, "roman.schuller@gmail.com", "Roman12345");
-            const querySnapshot = await getDocs(collection(db, vehicles[num]));
+            const querySnapshot = await getDocs(collection(db, vehicles[vehicleIndex]));
             const questionsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setQuestions(questionsList);
 
@@ -82,8 +84,23 @@ const FrageForm = () => {
         }
     };
 
+    const handleVehicleSelection = (event) => {
+        const selectedVehicleIndex = parseInt(event.target.value, 10);
+        setVehicleIndex(selectedVehicleIndex);
+        FetchQuestions(selectedVehicleIndex);
+    };
+
+    const handleBackToVehicleSelection = () => {
+        setVehicleIndex(null);
+        setQuestions([]);
+        setCurrentQuestionIndex(0);
+        setCorrectCheckboxes([]);
+        setSelectedCheckboxes([]);
+        setFeedback('');
+    };
+
     useEffect(() => {
-        FetchQuestions();
+       // FetchQuestions();
         const numbers = [1, 2, 3, 4, 5, 6];
         for (let i = numbers.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -119,10 +136,22 @@ const FrageForm = () => {
     console.log("Ausgabe QuestNum: ", questionNum);
     console.log("Ausgbe Fahrzeug: ", questions)
 
+    if (vehicleIndex === null) {
+        return (
+            <div>
+                <h3>Wählen Sie ein Fahrzeug:</h3>
+                {vehicles.map((vehicle, index) => (
+                    <button key={index} value={index} onClick={handleVehicleSelection}>
+                        {vehicle}
+                    </button>
+                ))}
+            </div>
+        );
+    }
     return (
         <div>
-            <h3>Fahrzeug: {vehicles[num]}</h3>
-            <h1>Wo befindet sich {questions[questionNum].id}?</h1>
+            <h3>Fahrzeug: {vehicles[vehicleIndex]}</h3>
+            <h1>Wo befindet sich {questions[currentQuestionIndex].id}?</h1>
             <h3>{isSingleChoice ? "Wählen Sie die richtige Antwort" : "Wählen Sie die richtigen Antworten"}</h3>
             <div className="checkbox-group">
                 {shuffledNumbers.map((number) => (
@@ -140,6 +169,7 @@ const FrageForm = () => {
             </div>
             {feedback && <p>{feedback}</p>}
             <button onClick={handleNextQuestion}>Weiter</button>
+            <button onClick={handleBackToVehicleSelection}> Zurück zur Fahrzeugauswahl </button>
         </div>
     );
 };
