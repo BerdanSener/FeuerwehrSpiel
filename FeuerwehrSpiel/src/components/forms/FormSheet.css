@@ -3,6 +3,10 @@
     padding: 20px;
 }
 
+.div-style {
+    padding-left: 30px;
+}
+
 .checkbox-group {
     display: flex;
     flex-direction: column;

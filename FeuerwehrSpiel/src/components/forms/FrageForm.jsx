@@ -155,7 +155,7 @@ const FrageForm = () => {
 
     if (vehicleIndex === null) {
         return (
-            <div>
+            <div className="div-style">
                 <h3>Um mit dem Fragebogen zu beginnen, wählen Sie bitte ein Fahrzeug:</h3>
                 <select onChange={handleVehicleSelection} defaultValue="">
                     <option value="" disabled>Fahrzeug auswählen</option>
@@ -169,7 +169,7 @@ const FrageForm = () => {
         );
     }
     return (
-        <div>
+        <div className="div-style">
             <h3>Fahrzeug: {vehicles[vehicleIndex]}</h3>
             <h1>{!questions[currentQuestionIndex] ? "Fragen beendet!" : `Wo befindet sich der Gegenstand: ${questions[currentQuestionIndex].id}?`}</h1>
             <h3>{isSingleChoice ? "Wählen Sie die richtige Antwort" : "Wählen Sie die richtigen Antworten"}</h3>
