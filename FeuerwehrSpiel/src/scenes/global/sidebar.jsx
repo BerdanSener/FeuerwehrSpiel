@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,8 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PsychologyAltIcon from "@mui/icons-material/PsychologyAlt";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import QuizIcon from "@mui/icons-material/Quiz";
+import { db, auth } from "../../firebase/firebase";
+import {doc, getDoc} from "firebase/firestore";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const navigate = useNavigate();
@@ -37,8 +39,33 @@ const CustomSidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const [isAdmin, setIsAdmin] = useState(false);
+    const [admins, setAdmins] = useState([]);
 
-  return (
+    useEffect(() => {
+        const fetchAdmins = async () => {
+            try {
+                const docRef = doc(db, 'credentials', 'users');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && data.admins) {
+                        setAdmins(data.admins);
+                    }
+                    console.log("docSnap", data.admins)
+                    if(data.admins.includes(auth.currentUser.email)) {
+                        setIsAdmin(true)
+                    }
+                } else {
+                    console.log('No such document!');
+                }
+            } catch (error) {
+                console.error('Error fetching document: ', error);
+            }
+        };
+        fetchAdmins()
+    }, []);
+        return (
     <Box
       sx={{
         "& .pro-sidebar-inner": {
@@ -111,13 +138,15 @@ const CustomSidebar = () => {
               setSelected={setSelected}
             />
 
-            <Item
-              title="Fragen hinzufügen"
-              to="/fragen_hinzufuegen"
-              icon={<QuizIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+              {isAdmin && (
+                  <Item
+                      title="Fragen hinzufügen"
+                      to="/fragen_hinzufuegen"
+                      icon={<QuizIcon />}
+                      selected={selected}
+                      setSelected={setSelected}
+                  />
+              )}
           </Box>
         </Menu>
       </Sidebar>
