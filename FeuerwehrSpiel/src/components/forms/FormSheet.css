@@ -1,0 +1,33 @@
+.FrageForm {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.checkbox-label {
+    margin: 5px 0;
+}
+
+.correct {
+    background-color: green;
+    color: white;
+}
+
+.incorrect {
+    background-color: red;
+    color: white;
+}
+
+.button-group {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.button-group button {
+    margin-right: 10px;
+    margin-left: 10px;
+}
