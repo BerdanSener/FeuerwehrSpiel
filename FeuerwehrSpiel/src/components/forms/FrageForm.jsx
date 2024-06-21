@@ -35,7 +35,7 @@ const FrageForm = () => {
     const FetchQuestions = async (vehicleIndex) => {
         setLoading(true)
         try {
-            //await signInWithEmailAndPassword(auth, "roman.schuller@gmail.com", "Roman12345");
+
             const querySnapshot = await getDocs(collection(db, vehicles[vehicleIndex]), auth);
             const questionsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             shuffleArray(questionsList);

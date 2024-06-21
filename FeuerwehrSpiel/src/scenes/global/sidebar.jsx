@@ -40,7 +40,7 @@ const CustomSidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
   const [isAdmin, setIsAdmin] = useState(false);
-    const [admins, setAdmins] = useState([]);
+    const [ admins,  setAdmins ] = useState([]);
 
     useEffect(() => {
         const fetchAdmins = async () => {
