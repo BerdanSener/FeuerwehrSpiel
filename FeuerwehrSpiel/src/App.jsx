@@ -10,6 +10,7 @@ import AdminPage from "./scenes/admin/adminpage.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./scenes/global/sidebar.jsx";
 import Topbar from "./scenes/global/topbar.jsx";
+import FrageForm from "./components/forms/FrageForm.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -49,7 +50,7 @@ function App() {
                   <main className="content" style={{ flexGrow: 1 }}>
                     <Routes>
                       <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/fragen" element={<Dashboard />} />
+                      <Route path="/fragen" element={<FrageForm />} />
                       <Route
                         path="/fragen_hinzufuegen"
                         element={<AdminPage />}

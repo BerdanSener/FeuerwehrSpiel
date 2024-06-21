@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import { auth, db, signInWithEmailAndPassword } from '../../firebase/firebase.mjs';
+import { auth, db } from '../../firebase/firebase.mjs';
 import './FormSheet.css';
 
 const FrageForm = () => {
@@ -35,8 +35,8 @@ const FrageForm = () => {
     const FetchQuestions = async (vehicleIndex) => {
         setLoading(true)
         try {
-            await signInWithEmailAndPassword(auth, "roman.schuller@gmail.com", "Roman12345");
-            const querySnapshot = await getDocs(collection(db, vehicles[vehicleIndex]));
+            //await signInWithEmailAndPassword(auth, "roman.schuller@gmail.com", "Roman12345");
+            const querySnapshot = await getDocs(collection(db, vehicles[vehicleIndex]), auth);
             const questionsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             shuffleArray(questionsList);
             setQuestions(questionsList);
@@ -171,7 +171,7 @@ const FrageForm = () => {
     return (
         <div>
             <h3>Fahrzeug: {vehicles[vehicleIndex]}</h3>
-            <h1>{!questions[currentQuestionIndex] ? "Fragen beendet!" : `Wo befindet sich ${questions[currentQuestionIndex].id}?`}</h1>
+            <h1>{!questions[currentQuestionIndex] ? "Fragen beendet!" : `Wo befindet sich der Gegenstand: ${questions[currentQuestionIndex].id}?`}</h1>
             <h3>{isSingleChoice ? "Wählen Sie die richtige Antwort" : "Wählen Sie die richtigen Antworten"}</h3>
             <div className="checkbox-group">
                 {shuffledNumbers.map((number) => (

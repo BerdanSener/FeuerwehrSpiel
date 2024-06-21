@@ -104,7 +104,7 @@ const CustomSidebar = () => {
             />
 
             <Item
-              title="Fragen"
+              title="Fragen beantworten"
               to="/fragen" // Update the path
               icon={<PsychologyAltIcon />}
               selected={selected}
