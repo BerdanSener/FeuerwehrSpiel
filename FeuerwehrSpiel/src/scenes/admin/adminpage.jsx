@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import AntwortMoeglichkeitGrid from "./AntwortMoeglichkeitGrid";
+import StatusBar from "./StatusBar";
 
 const AdminPage = () => {
   const [user] = useAuthState(auth);
@@ -36,9 +37,14 @@ const AdminPage = () => {
           ...antworten,
         });
 
-        console.log(" successfully.");
+        setSaveStatus(true);
+        setStatusBarVisibility(true);
       } catch (error) {
-        console.error("Error adding document: ", error);
+        if (error.code == "invalid-argument") {
+          setErrorMsg("Bitte fülle alle Felder aus");
+        }
+        setSaveStatus(false);
+        setStatusBarVisibility(true);
       }
     }
   };
@@ -53,15 +59,24 @@ const AdminPage = () => {
 
   const options = [
     { value: "KLF", label: "KLF" },
-    { value: "VLF", label: "VLF" },
+    { value: "RLF", label: "RLF" },
     { value: "VF", label: "VF" },
   ];
+
+  const [saveStatus, setSaveStatus] = useState(false);
+  const [statusBarVisibility, setStatusBarVisibility] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Frage hinzufügen" subtitle="Erstelle deine Frage" />
       </Box>
+      <StatusBar
+        isSaved={saveStatus}
+        visibility={statusBarVisibility}
+        errorMessage={errorMsg}
+      ></StatusBar>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined">
