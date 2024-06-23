@@ -5,7 +5,6 @@ import {
   FormControlLabel,
   Box,
   Typography,
-  Button,
 } from "@mui/material";
 
 const AntwortMoeglichkeitGrid = ({ onSelectedAnswersChange }) => {

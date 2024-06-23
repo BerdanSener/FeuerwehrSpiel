@@ -1,13 +1,6 @@
 import { Box, Button, TextField } from "@mui/material";
 import Header from "../../components/Header/Header";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  Timestamp,
-  collection,
-} from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase.mjs";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useState } from "react";
