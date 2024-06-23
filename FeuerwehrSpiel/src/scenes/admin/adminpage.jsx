@@ -28,21 +28,28 @@ const AdminPage = () => {
 
   const handleQuestionSave = async (i) => {
     if (user) {
-      const antworten = {
-        Antwort: [...selectedAnswers],
-      };
+      console.log(selectedAnswers);
+      if (selectedAnswers.length > 0) {
+        const antworten = {
+          Antwort: [...selectedAnswers],
+        };
 
-      try {
-        await setDoc(doc(db, value, frage), {
-          ...antworten,
-        });
+        try {
+          await setDoc(doc(db, value, frage), {
+            ...antworten,
+          });
 
-        setSaveStatus(true);
-        setStatusBarVisibility(true);
-      } catch (error) {
-        if (error.code == "invalid-argument") {
-          setErrorMsg("Bitte fülle alle Felder aus");
+          setSaveStatus(true);
+          setStatusBarVisibility(true);
+        } catch (error) {
+          if (error.code == "invalid-argument") {
+            setErrorMsg("Bitte fülle alle Felder aus");
+          }
+          setSaveStatus(false);
+          setStatusBarVisibility(true);
         }
+      } else {
+        setErrorMsg("Bitte wähle min. einen Laderaum");
         setSaveStatus(false);
         setStatusBarVisibility(true);
       }
