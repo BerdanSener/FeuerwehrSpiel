@@ -1,63 +1,117 @@
-import { Box, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import Header from "../../components/Header/Header";
-import { doc, getDoc, setDoc, updateDoc, Timestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  Timestamp,
+  collection,
+} from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase.mjs";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useState } from "react";
-import { Container, Grid, Paper, Typography } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
 import AntwortMoeglichkeitGrid from "./AntwortMoeglichkeitGrid";
 
 const AdminPage = () => {
   const [user] = useAuthState(auth);
-  //const userDocRef = doc(db, "Fragenkatalog", user.uid);
 
   const handleQuestionSave = async (i) => {
     if (user) {
-      alert(frage);
+      const antworten = {
+        Antwort: [0, 5],
+      };
+
+      try {
+        await setDoc(doc(db, value, frage), {
+          ...antworten,
+        });
+
+        console.log(" successfully.");
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
     }
   };
 
-  // Generate dummy data for the second grid
-  const secondGridItems = Array.from({ length: 2 }, (_, index) => ({
-    id: index + 1,
-    content: `Item ${index + 1}`,
-  }));
-
   const [frage, setFrage] = useState("");
+
+  const [value, setValue] = useState("");
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
+
+  const options = [
+    { value: "KLF", label: "KLF" },
+    { value: "VLF", label: "VLF" },
+    { value: "VF", label: "VF" },
+  ];
 
   return (
     <Box m="20px">
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Frage hinzufügen" subtitle="Erstelle deine Frage" />
-
-        <Grid container spacing={2}>
-          {/* First row with a single column */}
-          <Grid item xs={12}>
-            <Typography variant="h5">First Row</Typography>
-            <TextField
-              name="frage"
-              label="Frage"
-              variant="outlined"
-              onChange={setFrage}
-            />
-          </Grid>
-
-          {/* Second row with nested Grid for dynamic number of rows and 3 columns */}
-          <Grid item xs={12}>
-            <Typography variant="h5">Second Row</Typography>
-            <Grid container spacing={2}>
-              {secondGridItems.map((item) => (
-                <Grid item xs={4}>
-                  {/* Content for each item in the second grid */}
-                  <AntwortMoeglichkeitGrid />
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-
-          {/* Additional rows can be added similarly */}
-        </Grid>
       </Box>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel id="demo-simple-select-outlined-label">
+              Fahrzeug wählen
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              value={value}
+              onChange={handleChange}
+              label="Optionen"
+            >
+              {options.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        {/* First row with a single column */}
+        <Grid item xs={12}>
+          <Typography variant="h5">Geräte Namen eingeben</Typography>
+          <TextField
+            name="frage"
+            label="Gerät"
+            variant="outlined"
+            onChange={(e) => setFrage(e.target.value)}
+          />
+        </Grid>
+
+        {/* Second row with nested Grid for dynamic number of rows and 3 columns */}
+        <Grid item xs={12}>
+          <Typography variant="h5">Laderäumen zuteilen</Typography>
+          <AntwortMoeglichkeitGrid />
+        </Grid>
+
+        {/* Additional rows can be added similarly */}
+        <Grid item xs={12}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<SaveIcon />}
+            onClick={handleQuestionSave}
+          >
+            Save
+          </Button>
+        </Grid>
+      </Grid>
     </Box>
   );
 };
