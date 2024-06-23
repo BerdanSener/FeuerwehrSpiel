@@ -29,7 +29,7 @@ const AdminPage = () => {
   const handleQuestionSave = async (i) => {
     if (user) {
       const antworten = {
-        Antwort: [0, 5],
+        Antwort: [...selectedAnswers],
       };
 
       try {
@@ -66,6 +66,12 @@ const AdminPage = () => {
   const [saveStatus, setSaveStatus] = useState(false);
   const [statusBarVisibility, setStatusBarVisibility] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
+
+  const handleSelectedAnswersChange = (answers) => {
+    setSelectedAnswers(answers);
+  };
 
   return (
     <Box m="20px">
@@ -112,7 +118,9 @@ const AdminPage = () => {
         {/* Second row with nested Grid for dynamic number of rows and 3 columns */}
         <Grid item xs={12}>
           <Typography variant="h5">Laderäumen zuteilen</Typography>
-          <AntwortMoeglichkeitGrid />
+          <AntwortMoeglichkeitGrid
+            onSelectedAnswersChange={handleSelectedAnswersChange}
+          />
         </Grid>
 
         {/* Additional rows can be added similarly */}
